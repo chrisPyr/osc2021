@@ -1,26 +1,21 @@
-CC:= aarch64-linux-gnu
-Source:= a.S
-LINKER:= linker.ld
-QEMUL:= qemu-system-aarch64
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+CFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -nostartfiles
 
-.PHONY: all
-all: a.o kernel8.elf kernel8.img
-	$(QEMUL) -M raspi3 -kernel kernel8.img -display none -d in_asm
+all: clean kernel8.img
 
-.PHONY: a.o
-a.o: $(Source)
-	$(CC)-gcc -c $(Source)
+start.o: start.S
+	aarch64-linux-gnu-gcc $(CFLAGS) -c start.S -o start.o
 
-.PHONY: kernel8.elf
-kernel8.elf: a.o
-	$(CC)-ld -T $(LINKER) -o kernel8.elf a.o 
+%.o: %.c
+	aarch64-linux-gnu-gcc $(CFLAGS) -c $< -o $@
 
-.PHONY: kernel8.img
-kernel8.img: kernel8.elf
-	$(CC)-objcopy -O binary kernel8.elf kernel8.img
+kernel8.img: start.o $(OBJS)
+	aarch64-linux-gnu-ld -nostdlib -nostartfiles start.o $(OBJS) -T linker.ld -o kernel8.elf
+	aarch64-linux-gnu-objcopy -O binary kernel8.elf kernel8.img
 
-.PHONY: clean
 clean:
-	rm -f a.o kernel8.elf kernel8.img a.out
+	rm kernel8.elf *.o 
 
-
+run:
+	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -serial null -serial stdio
