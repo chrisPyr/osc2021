@@ -1,5 +1,6 @@
 #include "../include/uart.h"
-#include "stringUtils.c"
+#include "../include/stringUtils.h"
+#include "../include/shell.h"
 
 #define MAX_BUF_SIZE 128
 #define PM_PASSWORD 0x5a000000

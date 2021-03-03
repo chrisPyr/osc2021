@@ -24,7 +24,7 @@
  */
 
 #include "../include/gpio.h"
-
+#include "../include/uart.h"
 /* Auxilary mini UART registers */
 #define AUX_ENABLE      ((volatile unsigned int*)(MMIO_BASE+0x00215004))
 #define AUX_MU_IO       ((volatile unsigned int*)(MMIO_BASE+0x00215040))
